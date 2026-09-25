@@ -1,76 +1,121 @@
-# ThinkPad T490 Performance & Cooling Mod
+# 🔥 ThinkPad T490 — *Pocket Workstation* Mod
 
-A small hardware + software tuning project for my **Lenovo ThinkPad T490**, focused on getting better sustained CPU performance while docked without turning the machine into a permanently high-power laptop.
+> **A tiny 14-inch business laptop with a bigger cooling system, PTM7950, sane power limits, and two personalities: _Docked Beast_ + _Battery Chill_.**
 
-The main changes are:
+![ThinkPad T490](https://img.shields.io/badge/ThinkPad-T490-E2231A?style=for-the-badge&logo=lenovo&logoColor=white)
+![CPU](https://img.shields.io/badge/CPU-Core_i7--8665U-0071C5?style=for-the-badge&logo=intel&logoColor=white)
+![RAM](https://img.shields.io/badge/RAM-32_GB-555555?style=for-the-badge)
+![SSD](https://img.shields.io/badge/SSD-512_GB-555555?style=for-the-badge)
+![Cooling](https://img.shields.io/badge/Cooling-Dual_Heatpipe-F97316?style=for-the-badge)
 
-- upgraded cooling with a **dual-heatpipe Sunon fan/heatsink assembly**
-- replaced conventional thermal paste with **Honeywell PTM7950**
-- separate **ThrottleStop profiles** for docked and battery use
-- an **80% battery charge threshold** for mostly-docked use
+This repo documents my **Lenovo ThinkPad T490 performance / cooling mod**. The goal was simple: get noticeably better sustained CPU performance while docked, without making battery mode hot, noisy, or wasteful.
 
-> **Note:** This README documents the setup shown in my screenshots. Power limits, temperatures, and stability can vary between individual T490 units. Do not blindly copy tuning values without testing your own laptop.
+The recipe:
+
+- 🌀 **dual-heatpipe Sunon fan/heatsink**
+- 🧊 **Honeywell PTM7950** on the CPU
+- ⚡ separate **ThrottleStop Docked + Battery profiles**
+- 🔋 **80% battery charge threshold** for mostly-docked use
+- 🧠 current Lenovo BIOS / EC firmware
+- 🛡️ thermal protections kept enabled
 
 ---
 
-## Machine Specs
+## 🧾 The Machine
 
-| Component | Configuration |
+| Part | My T490 |
 |---|---|
-| Laptop | Lenovo ThinkPad T490 |
-| CPU | Intel Core i7-8665U |
-| RAM | 32 GB |
-| Display | Full HD touchscreen |
-| Storage | 512 GB SSD |
-| Cooling | Dual-heatpipe Sunon fan/heatsink |
-| Thermal interface | Honeywell PTM7950 |
+| **Model** | Lenovo ThinkPad T490 |
+| **CPU** | Intel Core i7-8665U |
+| **RAM** | 32 GB |
+| **Display** | 14-inch Full HD touchscreen |
+| **Storage** | 512 GB SSD |
+| **Cooling** | Dual-heatpipe Sunon fan/heatsink assembly |
+| **Thermal interface** | Honeywell PTM7950 |
+| **Main use** | Docked productivity + portable daily driver |
+
+### Firmware baseline
+
+As of **25 September 2026**, Lenovo's current T490 BIOS package is:
+
+| Firmware | Version |
+|---|---:|
+| **UEFI BIOS** | **1.85** |
+| **Embedded Controller** | **1.28** in Lenovo's current release table* |
+| **Lenovo release date** | **25 May 2026** |
+| **Lenovo severity** | **Critical** |
+
+Official Lenovo package:  
+https://support.lenovo.com/us/en/downloads/ds539061
+
+*Lenovo’s download header currently displays `1.85/1.26`, while the release-history table on the same page lists BIOS `1.85` with ECP `1.28` (`N2IHT44W`). Check the Lenovo page for your exact machine type before flashing.
+
+> [!TIP]
+> Firmware changes can affect thermals, power limits, charging, USB-C/Thunderbolt behavior, and ThrottleStop behavior. If somebody copies this project, I recommend starting from the latest Lenovo firmware available for their exact T490 machine type.
 
 ---
 
-## Why I Did This
+## 📷 Project Photos
 
-The stock T490 cooling system is designed around a thin-and-light power envelope. It works, but sustained CPU boost can become limited by temperature and/or power during heavier workloads.
+A quick look at the hardware side of the project before getting into the settings.
 
-Because I use this laptop docked a lot, I wanted two different behaviors:
-
-- **Docked:** prioritize responsiveness and sustained CPU performance.
-- **Battery:** reduce power consumption and heat while keeping the laptop pleasant to use.
-
-Instead of simply forcing maximum performance all the time, I combined the cooling upgrade with profile-based power management.
+| T490 motherboard during the mod | Dual-heatpipe cooling hardware |
+|---|---|
+| ![T490 motherboard during the mod](PXL_20260530_131346880.jpg) | ![Dual-heatpipe Sunon cooling assemblies](PXL_20260530_131818121.jpg) |
 
 ---
 
-# Hardware Mod
+# 🧊 Hardware Mod — Give the 8665U Some Breathing Room
 
-## Dual-Heatpipe Sunon Cooling Assembly
+The stock T490 cooling setup is built for a thin business laptop. That is fine for normal office use, but sustained boost loads can quickly run into thermal or power limits.
 
-I replaced the original cooler with a **dual-heatpipe Sunon fan/heatsink assembly**.
+My answer was not **"remove every limit and pray."** 😅
 
-The extra heatpipe gives the cooling system more thermal capacity and a better path for moving CPU heat toward the fin stack. This is especially useful when the CPU is allowed to stay at higher package power while the laptop is docked.
+I upgraded the cooling first, then tuned power around the new thermal headroom.
 
-![Cooling assemblies](PXL_20260530_131818121.jpg)
+## 1. Dual-heatpipe Sunon cooler
 
-## PTM7950
+I swapped in a **dual-heatpipe Sunon fan/heatsink assembly**.
 
-I used **Honeywell PTM7950** as the CPU thermal interface material.
+The second heatpipe gives the system more capacity to move heat away from the CPU and toward the fin stack. That matters most during longer CPU-heavy workloads where a short boost turns into sustained package power.
 
-PTM7950 is a phase-change thermal material that is popular for laptops because it performs well under repeated thermal cycling and is less prone to the pump-out behavior that some conventional thermal pastes can experience in mobile hardware.
+![Stock / replacement cooling assemblies](PXL_20260530_131818121.jpg)
 
-The photo below shows the board during the cooler swap / thermal-interface work.
+## 2. PTM7950
 
-![ThinkPad T490 motherboard and CPU](PXL_20260530_131346880.jpg)
+For the CPU thermal interface I used **Honeywell PTM7950** instead of normal paste.
+
+PTM7950 is a phase-change thermal material commonly used in compact systems because it handles repeated heating/cooling cycles well and can be a good fit for laptop dies where ordinary paste can degrade or pump out over time.
+
+![T490 motherboard during the cooling mod](PXL_20260530_131346880.jpg)
+
+> [!CAUTION]
+> Opening a laptop, removing a heatsink, and changing thermal material can damage components if done incorrectly. Disconnect power/battery as appropriate and do not copy somebody else's power limits blindly.
 
 ---
 
-# ThrottleStop Setup
+# ⚡ Two Personalities: Docked Beast vs Battery Chill
 
-I use **ThrottleStop 9.7.3** with separate profiles for **Docked** and **Battery** operation.
+I use **ThrottleStop 9.7.3** with separate profiles.
 
-The important idea is not one single magic setting; it is using a more aggressive profile when external power and cooling headroom are available, then switching to a more conservative profile on battery.
+Instead of forcing one compromise profile everywhere, the laptop behaves differently depending on how I am using it:
 
-## Docked Profile
+| | 🖥️ **Docked Beast** | 🔋 **Battery Chill** |
+|---|---:|---:|
+| **Speed Shift EPP** | **32** | **128** |
+| **PL1 / Long Power** | **20 W** | **10 W intended** |
+| **PL2 / Short Power** | **30 W** | **15 W intended** |
+| **Turbo Time Limit** | **28 s** | **3 s intended** |
+| **Turbo Boost** | Enabled | Enabled |
+| **SpeedStep** | Enabled | Enabled |
+| **C1E** | Enabled | Enabled |
+| **BD PROCHOT** | Enabled | Enabled |
 
-The docked profile is configured around higher responsiveness and sustained CPU power.
+The docked profile is allowed to be more eager to boost. The battery profile backs off so the machine runs cooler and wastes less energy away from the charger.
+
+---
+
+## 🖥️ Docked Beast
 
 ### Main profile
 
@@ -78,29 +123,25 @@ The docked profile is configured around higher responsiveness and sustained CPU 
 - **SpeedStep:** enabled
 - **C1E:** enabled
 - **BD PROCHOT:** enabled
-- **Disable Turbo:** unchecked, so Turbo Boost remains available
+- **Disable Turbo:** unchecked → Turbo Boost remains available
 
-![ThrottleStop docked profile](Screenshot 2026-09-24 172518.png)
+![ThrottleStop Docked profile](Screenshot%202026-09-24%20172518.png)
 
 ### Turbo Power Limits
 
-The docked TPL screenshot shows:
-
-- **PL1 / Long Power:** `20 W`
-- **PL2 / Short Power:** `30 W`
+- **PL1:** `20 W`
+- **PL2:** `30 W`
 - **Turbo Time Limit:** `28 s`
 - **Sync MMIO:** enabled
-- **Clamp:** enabled for PL1 and PL2
+- **Clamp:** enabled for PL1 + PL2
 
-![ThrottleStop docked TPL](Screenshot 2026-09-24 172538.png).
+![Docked Turbo Power Limits](Screenshot%202026-09-24%20172538.png)
 
-This gives the CPU noticeably more power headroom than a battery-focused configuration while still keeping explicit limits in place.
+This profile is where the dual-heatpipe + PTM7950 upgrade earns its keep: the CPU gets more sustained power headroom while the upgraded cooling has a better chance of carrying that heat away.
 
 ---
 
-## Battery Profile
-
-The battery profile is tuned to favor efficiency.
+## 🔋 Battery Chill
 
 ### Main profile
 
@@ -110,136 +151,164 @@ The battery profile is tuned to favor efficiency.
 - **BD PROCHOT:** enabled
 - **Disable Turbo:** unchecked
 
-![ThrottleStop battery profile](Screenshot 2026-09-24 172504.png).
+![ThrottleStop Battery profile](Screenshot%202026-09-24%20172504.png)
 
-### Battery TPL values shown in the profile
+### Intended battery TPL
 
-The Battery TPL editor shows these profile values:
-
-- **PL1 / Long Power:** `10 W`
-- **PL2 / Short Power:** `15 W`
+- **PL1:** `10 W`
+- **PL2:** `15 W`
 - **Turbo Time Limit:** `3 s`
 
-![ThrottleStop battery TPL](Screenshot 2026-09-24 172557.png).
+![Battery Turbo Power Limits](Screenshot%202026-09-24%20172557.png)
 
-### Important screenshot detail
-
-In that Battery TPL screenshot, the editable profile fields show **10 W / 15 W / 3 s**, while the live **Turbo Power Limits** readout at the top still shows **20 W / 30 W / 28 s** for MSR/MMIO.
-
-That means the screenshot by itself does **not** prove that the lower battery limits were active at that exact moment. Depending on the ThrottleStop state, the profile may have been edited but not yet applied, or the active limits may still have been inherited from the docked profile / firmware.
-
-So I treat **10 W / 15 W / 3 s as the intended Battery profile values**, rather than claiming the screenshot confirms they were active.
+> [!NOTE]
+> The Battery TPL editor in my screenshot shows **10 W / 15 W / 3 s**, but the live MSR/MMIO readout at the top still shows **20 W / 30 W / 28 s**. So the screenshot proves those are my **intended Battery profile values**, not that they were already active at that exact moment.
 
 ---
 
-# Battery Preservation
+# 🔋 Battery Preservation
 
-Because this laptop spends a lot of time connected to a dock, I use an **80% charge threshold**.
+Because this T490 spends a lot of time on a dock, I cap charging at **80%**.
 
-The goal is to avoid keeping the battery at 100% for long periods when I do not need the full battery capacity. When I know I will be away from power for a long time, I can temporarily change the threshold and charge higher.
+That way the battery is not sitting at 100% every day when I do not actually need all of its capacity. Before a long unplugged day, the threshold can be changed temporarily and the battery charged higher.
 
----
-
-# Observed Idle / Light-Load Behavior
-
-The screenshots were taken under a very light workload, so they are **not benchmark results**. Still, they give a useful look at the machine after the cooling and profile changes.
-
-From the screenshots:
-
-- current CPU temperature was around **40–42 °C**
-- recorded per-core maximums were around **60–65 °C**
-- package power was around **1.8–2.0 W** at that moment
-- the CPU was clocking around **1.0 GHz** under the light load shown
-
-These values mainly demonstrate that the system can idle down normally even with the performance-oriented docked profile.
+**Daily docked target:** `80%`
 
 ---
 
-# Profile Summary
+# 🌡️ What the Screenshots Show
 
-| Setting | Docked | Battery |
-|---|---:|---:|
-| Speed Shift EPP | 32 | 128 |
-| PL1 | 20 W | 10 W intended |
-| PL2 | 30 W | 15 W intended |
-| Turbo Time Limit | 28 s | 3 s intended |
-| Turbo Boost | Enabled | Enabled |
-| SpeedStep | Enabled | Enabled |
-| C1E | Enabled | Enabled |
-| BD PROCHOT | Enabled | Enabled |
+These screenshots are **idle / light-load observations**, not benchmark results.
 
-The lower EPP value on the docked profile makes the CPU more eager to boost, while the higher battery EPP value biases the system toward efficiency.
+At the moment captured:
+
+- CPU temperature: roughly **40–42 °C**
+- recorded per-core maximums: about **60–65 °C**
+- CPU package power: roughly **1.8–2.0 W**
+- current clock under light load: about **1.0 GHz**
+
+The nice part is that the performance-oriented docked setup still lets the processor clock down normally when there is nothing useful to do.
 
 ---
 
-# What This Mod Is Trying to Achieve
+# 🧪 Benchmark Quest
 
-This setup is aimed at balancing four things:
+This repo is more fun when it has numbers, so these are the next things I want to record properly:
 
-1. **better sustained CPU performance when docked**
-2. **better thermal transfer with PTM7950**
-3. **more cooling capacity from the dual-heatpipe assembly**
-4. **reasonable battery behavior when unplugged**
+- [ ] Cinebench single-core / multi-core
+- [ ] 10-minute sustained CPU load
+- [ ] maximum CPU temperature
+- [ ] sustained CPU package power
+- [ ] sustained all-core clock
+- [ ] fan noise comparison
+- [ ] stock cooler vs dual-heatpipe cooler
+- [ ] normal paste vs PTM7950
+- [ ] docked vs battery profile
+- [ ] battery runtime test
 
-It is not intended to turn the T490 into a gaming laptop or bypass every thermal protection mechanism. I keep safeguards such as **BD PROCHOT** enabled and use defined power limits instead of simply removing limits.
+### Benchmark table — coming soon™
 
----
+| Test | Stock | Modded | Difference |
+|---|---:|---:|---:|
+| Cinebench | — | — | — |
+| 10 min CPU temp | — | — | — |
+| Sustained package power | — | — | — |
+| Sustained clock | — | — | — |
 
-# Things Worth Testing
-
-For anyone repeating a similar mod, useful before/after measurements would include:
-
-- Cinebench or another repeatable CPU benchmark
-- sustained package power after 5–10 minutes
-- maximum CPU temperature
-- clock speed during a sustained all-core workload
-- fan noise / RPM behavior
-- idle temperature
-- battery runtime under a repeatable workload
-
-A good comparison should use the same room temperature, Windows power mode, BIOS settings, workload, and background processes.
-
----
-
-# Safety / Disclaimer
-
-Opening a laptop and changing its cooling hardware can damage the motherboard, fan connectors, battery, display cables, or other components if done incorrectly. Incorrect power settings can also cause instability, excess heat, or unexpected throttling.
-
-This repository is a record of **my own T490 configuration**, not a guarantee that the same values are appropriate for every machine.
+For a fair comparison I want the **same room temperature, BIOS, Windows power mode, background apps, test duration, and workload**.
 
 ---
 
-## Gallery
+# 🧠 Mod Philosophy
 
-### Battery profile
-![Battery profile](assets/throttlestop-battery.png)
+This is not a **"MAX EVERYTHING"** build.
+
+The idea is:
+
+```text
+better cooling
+      +
+controlled power limits
+      +
+separate AC / battery behavior
+      +
+battery charge management
+      =
+a nicer T490 to actually use
+```
+
+I intentionally keep things like **BD PROCHOT** enabled. The goal is to improve the laptop, not delete every safety mechanism for a benchmark screenshot.
+
+---
+
+# 🛠️ Software / Maintenance Checklist
+
+For this setup I keep an eye on:
+
+- Lenovo BIOS / Embedded Controller updates
+- Lenovo power-management components
+- Intel chipset / graphics updates
+- USB-C / Thunderbolt firmware where applicable
+- ThrottleStop profile behavior after BIOS updates
+- battery charge threshold after Lenovo software/firmware changes
+- fan behavior and temperatures after servicing the cooler
+
+> [!IMPORTANT]
+> A firmware update can reset or change low-level behavior. After updating BIOS/EC, I re-check temperatures, boost behavior, power limits, and battery settings instead of assuming everything is unchanged.
+
+---
+
+# 📸 Full Project Gallery
+
+All images below are stored directly in this repository, so the README works without an `assets/` folder. Click an image on GitHub to view it full-size.
+
 
 ### Docked profile
-![Docked profile](assets/throttlestop-docked.png)
+![Docked profile](Screenshot%202026-09-24%20172518.png)
 
-### Docked turbo power limits
-![Docked TPL](assets/tpl-docked.png)
+### Docked TPL
+![Docked TPL](Screenshot%202026-09-24%20172538.png)
 
-### Battery turbo power limits
-![Battery TPL](assets/tpl-battery.png)
+### Battery profile
+![Battery profile](Screenshot%202026-09-24%20172504.png)
+
+### Battery TPL
+![Battery TPL](Screenshot%202026-09-24%20172557.png)
 
 ### Cooling hardware
-![Cooling hardware](assets/cooling-assemblies.jpg)
+![Cooling hardware](PXL_20260530_131818121.jpg)
 
 ### Motherboard during the mod
-![Motherboard](assets/t490-motherboard-ptm7950.jpg)
+![Motherboard](PXL_20260530_131346880.jpg)
 
 ---
 
-## Future Updates
+# 🚧 Future Upgrades to This Repo
 
-Possible additions to this project:
-
-- before/after benchmark results
-- fan noise comparison
-- sustained temperature graphs
-- exact part number for the dual-heatpipe Sunon assembly
-- Lenovo battery-threshold screenshots/configuration
-- BIOS version and Windows power-plan details
+- exact Sunon cooler part number
+- actual before/after benchmark graphs
+- battery-threshold screenshot
+- BIOS setup screenshots
 - ThrottleStop configuration export
+- Windows power-plan details
+- SSD model + health / benchmark info
+- dock model and peripherals
+- fan acoustics under sustained load
 
+---
+
+# ⚠️ Disclaimer
+
+This repository documents **my own ThinkPad T490**. Hardware revisions, firmware, ambient temperature, silicon quality, cooling condition, and workload all matter.
+
+Do not assume the same power limits or temperatures are correct for every T490. Hardware mods and incorrect power settings can cause instability, overheating, damaged connectors, damaged components, or lost data.
+
+**Measure first. Change one thing at a time. Test after every change.**
+
+---
+
+## ❤️ Why keep a T490 alive?
+
+Because a well-built older ThinkPad with **32 GB RAM, a touchscreen, replaceable parts, a proper keyboard, and upgraded cooling** is still a ridiculously useful little machine.
+
+And because modifying ThinkPads is fun. 😎
